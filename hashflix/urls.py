@@ -21,8 +21,8 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path("", include("filme.urls")),
+    path('admin/', admin.site.urls),
+    path('', include('filme.urls', namespace='filme')),
 ]
 
 ## As variáveis STATIC_URL e MEDIA_URL são usadas para definir as URLs base para acessar arquivos estáticos e arquivos de mídia, respectivamente. Já as variáveis STATIC_ROOT e MEDIA_ROOT são usadas para definir os diretórios onde os arquivos estáticos e de mídia serão armazenados no servidor.
