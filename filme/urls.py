@@ -10,6 +10,10 @@ from .views import  Homepage, Homefilmes, Detalhesfilme
 
 app_name='filme'
 ## modelo CBV  
+
+# path('', Homepage.as_view(), name='homepage')
+#       ^        ^                   ^
+#    caminho   view              nome da URL
 urlpatterns = [
     path('', Homepage.as_view(), name='homepage'),
     path('filmes/', Homefilmes.as_view(), name='homefilmes'),

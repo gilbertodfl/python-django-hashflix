@@ -25,4 +25,18 @@ class Filme(models.Model):
 
     def __str__(self):
         ##return self.titulo,  self.categoria, self.visualizacoes, self.data_criacao    
-        return self.titulo           
+        return self.titulo
+
+class Episodio(models.Model):
+    # Um episódio pertence a um filme, e um filme pode ter vários episódios. 
+    # Por isso, usamos uma ForeignKey para relacionar o episódio com o filme.
+    # No caso de aulas, por exemplo, curso de python e ai vários episódios, cada episódio pertence a um curso.
+
+    filme = models.ForeignKey(Filme, on_delete=models.CASCADE, related_name='episodios')
+    titulo = models.CharField(max_length=100)
+    descricao = models.TextField(max_length=1000)
+    video = models.URLField()
+    data_criacao = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.filme.titulo} - {self.titulo}"
