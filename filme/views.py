@@ -19,6 +19,14 @@ class Detalhesfilme(DetailView):
     model = Filme
     ## Diferente da ListView, aqui estamos passando um objeto específico, e não uma lista de objetos. 
     # O nome da variável que vai ser passada para o template é filme, e não object_list.
+    def get_context_data(self, **kwargs):
+        # Aqui podemos adicionar mais dados ao contexto, além do objeto filme que já está sendo 
+        # passado automaticamente pelo DetailView.
+        context = super( Detalhesfilme, self).get_context_data(**kwargs)
+        # Aqui estou passando filmes_relacionados que tem todos os filmes vinculados.
+        filmes_relacionados = Filme.objects.filter(categoria=self.get_object().categoria)[0:5] 
+        context['filmes_relacionados'] = filmes_relacionados
+        return context
 
 ##FBS - Function Based Views. 
 ## o exemplo abaixo é uma função que recebe a requisição do usuário, processa os dados e retorna uma resposta.
