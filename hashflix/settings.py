@@ -62,6 +62,9 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                ## aqui indicamos o app filme, conforme a pasta, veja o arquivo novos_context.py e dentro pego a função
+                'filme.novos_context.lista_filmes_recentes',
+                'filme.novos_context.lista_filmes_emalta',
             ],
         },
     },
