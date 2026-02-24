@@ -19,6 +19,19 @@ class Detalhesfilme(DetailView):
     model = Filme
     ## Diferente da ListView, aqui estamos passando um objeto específico, e não uma lista de objetos. 
     # O nome da variável que vai ser passada para o template é filme, e não object_list.
+
+    # quem é *args e **kwargs?
+    # *args é uma tupla que contém os argumentos posicionais passados para a função, 
+    # e **kwargs é um dicionário que contém os argumentos nomeados passados para a função.
+
+    def get(self, request, *args, **kwargs):
+        # Aqui estamos pegando o objeto filme que foi passado para o template, e incrementando o número de visualizações em 1.
+        filme = self.get_object()
+        filme.visualizacoes += 1
+        filme.save()
+        ## redireciona o usuário para url final
+        return super().get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
         # Aqui podemos adicionar mais dados ao contexto, além do objeto filme que já está sendo 
         # passado automaticamente pelo DetailView.
