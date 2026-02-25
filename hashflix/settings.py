@@ -65,6 +65,8 @@ TEMPLATES = [
                 ## aqui indicamos o app filme, conforme a pasta, veja o arquivo novos_context.py e dentro pego a função
                 'filme.novos_context.lista_filmes_recentes',
                 'filme.novos_context.lista_filmes_emalta',
+                'filme.novos_context.filme_destaque',
+               
             ],
         },
     },
