@@ -41,6 +41,17 @@ class Detalhesfilme(DetailView):
         context['filmes_relacionados'] = filmes_relacionados
         return context
 
+class Pesquisafilme(ListView):
+    template_name = "pesquisafilme.html"
+    model = Filme
+
+    def get_queryset(self):
+        query = self.request.GET.get('query')
+        if query:
+            return Filme.objects.filter(titulo__icontains=query)
+        else:
+            return Filme.objects.none()
+
 ##FBS - Function Based Views. 
 ## o exemplo abaixo é uma função que recebe a requisição do usuário, processa os dados e retorna uma resposta.
 
