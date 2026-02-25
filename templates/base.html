@@ -39,7 +39,13 @@
         navbar.classList.add('hidden');
       } else {
         // Scrolling up
+        navbar.classList.add('bg-gray-900', 'bg-opacity-90', 'backdrop-blur-sm');
         navbar.classList.remove('hidden');
+      }
+      else{
+        navbar.classList.remove('bg-gray-900', 'bg-opacity-90', 'backdrop-blur-sm');
+        navbar.classList.remove('hidden');
+
       }
 
       lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // For Mobile or negative scrolling
