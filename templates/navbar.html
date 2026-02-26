@@ -16,13 +16,14 @@
         {% endif %}
         <div class='mr-2'>
             {% if user.is_authenticated %}
-                <a href='#'>
+                <form method="post" action="{% url 'filme:logout' %}">
+                    {% csrf_token %}
                     <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">
                         Logout
                     </button>
-                </a>
+                </form>
             {% else %}
-                <a href='#'>
+                <a href='{% url 'filme:login' %}'>
                     <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">
                         Login
                     </button>
@@ -32,7 +33,7 @@
         </div>
         {% if user.is_authenticated %}
         <div class='mr-2'>
-            <a href='#'>
+            <a href='{% url 'filme:editarperfil' %}'>
                 <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">
                  Editar Perfil
                 </button>

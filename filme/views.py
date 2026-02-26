@@ -64,6 +64,14 @@ class Pesquisafilme(LoginRequiredMixin,ListView):
             ## return Filme.objects.filter(titulo__icontains=query)
         else:
             return Filme.objects.none()
+class Editarperfil(LoginRequiredMixin, TemplateView):
+    template_name = "editarperfil.html"
+    model = Filme
+
+class Criarconta( TemplateView):
+    template_name = "editarperfil.html"
+    model = Filme
+
 
 ##FBS - Function Based Views. 
 ## o exemplo abaixo é uma função que recebe a requisição do usuário, processa os dados e retorna uma resposta.
