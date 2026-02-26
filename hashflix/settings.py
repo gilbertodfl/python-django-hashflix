@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     'filme',
+    'crispy_forms',
+    'crispy_bootstrap5',
 ]
 
 MIDDLEWARE = [
@@ -66,6 +68,7 @@ TEMPLATES = [
                 'filme.novos_context.lista_filmes_recentes',
                 'filme.novos_context.lista_filmes_emalta',
                 'filme.novos_context.filme_destaque',
+
                
             ],
         },
@@ -138,3 +141,8 @@ LOGIN_REDIRECT_URL = 'filme:homefilmes'
 # Aqui é a url para onde o usuário deve ser redirecionado caso tente acessar 
 # uma página que requer login sem estar autenticado.
 LOGIN_URL= 'filme:login'
+
+# MAIS DETALHES EM https://github.com/django-crispy-forms/crispy-bootstrap5
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = 'bootstrap5'
+CRISPY_TEMPLATE_PACK = 'bootstrap5'

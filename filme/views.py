@@ -69,7 +69,7 @@ class Editarperfil(LoginRequiredMixin, TemplateView):
     model = Filme
 
 class Criarconta( TemplateView):
-    template_name = "editarperfil.html"
+    template_name = "criarconta.html"
     model = Filme
 
 
