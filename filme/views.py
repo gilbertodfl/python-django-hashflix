@@ -37,7 +37,7 @@ class Detalhesfilme(DetailView):
         # passado automaticamente pelo DetailView.
         context = super( Detalhesfilme, self).get_context_data(**kwargs)
         # Aqui estou passando filmes_relacionados que tem todos os filmes vinculados.
-        filmes_relacionados = Filme.objects.filter(categoria=self.get_object().categoria)[0:5] 
+        filmes_relacionados = self.model.objects.filter(categoria=self.get_object().categoria)[0:5] 
         context['filmes_relacionados'] = filmes_relacionados
         return context
 
@@ -48,7 +48,10 @@ class Pesquisafilme(ListView):
     def get_queryset(self):
         query = self.request.GET.get('query')
         if query:
-            return Filme.objects.filter(titulo__icontains=query)
+
+            return self.model.objects.filter(titulo__icontains=query)
+            ## o abaixo é apenas ilustrativo, o acima é melhor. 
+            ## return Filme.objects.filter(titulo__icontains=query)
         else:
             return Filme.objects.none()
 

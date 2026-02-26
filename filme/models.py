@@ -1,16 +1,13 @@
 from django.db import models
 from django.utils import timezone
-LISTA_CATEGORIAS = [
-    ("acao", "Ação"),
-    ("comedia", "Comédia"),
-    ("drama", "Drama"),
-    ("terror", "Terror"),
-    ("ficcao", "Ficção Científica"),
-    ("animacao", "Animação"),
-    ("aventura", "Aventura"),
-    ("romance", "Romance"),
-    ("documentario", "Documentário"),
-]
+
+from django.contrib.auth.models import AbstractUser
+LISTA_CATEGORIAS = (
+    ("ANALISES", "Análises"),
+    ("PROGRAMACAO", "Programação"),
+    ("APRESENTACAO", "Apresentação"),
+    ("OUTROS", "Outros"),
+)
 
 # Create your models here.
 class Filme(models.Model):
@@ -40,3 +37,9 @@ class Episodio(models.Model):
 
     def __str__(self):
         return f"{self.filme.titulo} - {self.titulo}"
+
+class Usuario(AbstractUser):
+    # Herda de AbstractUser, que já tem os campos básicos de um usuário, como username, email, password, etc.
+    # Aqui podemos adicionar campos adicionais, como por exemplo, data de nascimento, ou foto de perfil.
+    #filmes_vistos = models.ManyToManyField(Filme, related_name='usuarios_vistos', blank=True)
+    filmes_vistos = models.ManyToManyField('Filme')

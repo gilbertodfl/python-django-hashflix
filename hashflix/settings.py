@@ -85,6 +85,8 @@ DATABASES = {
     }
 }
 
+## Aqui estamos indicando que o modelo de usuário personalizado é o modelo Usuario que criamos no app filme, e que herda de AbstractUser.
+AUTH_USER_MODEL = 'filme.Usuario'
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
