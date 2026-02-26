@@ -2,19 +2,19 @@ from ast import List
 from django.shortcuts import render
 from .models import Filme
 from django.views.generic import DetailView, TemplateView, ListView
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 ## cbv é uma classe que herda de TemplateView, e tem um método get_context_data 
 # que é responsável por passar os dados para o template.
 class Homepage(TemplateView):
     template_name = "homepage.html"
     
-class Homefilmes(ListView):
+class Homefilmes(LoginRequiredMixin, ListView):
     template_name = "homefilmes.html"
     model = Filme
     ## object_list é o nome da variável que vai ser passada para o template, e que vai conter a lista de filmes.
 
-class Detalhesfilme(DetailView):
+class Detalhesfilme(LoginRequiredMixin,DetailView):
     template_name = "detalhesfilme.html"    
     model = Filme
     ## Diferente da ListView, aqui estamos passando um objeto específico, e não uma lista de objetos. 
@@ -29,6 +29,8 @@ class Detalhesfilme(DetailView):
         filme = self.get_object()
         filme.visualizacoes += 1
         filme.save()
+        usuario= request.user
+        usuario.filmes_vistos.add(filme)
         ## redireciona o usuário para url final
         return super().get(request, *args, **kwargs)
 
@@ -41,7 +43,7 @@ class Detalhesfilme(DetailView):
         context['filmes_relacionados'] = filmes_relacionados
         return context
 
-class Pesquisafilme(ListView):
+class Pesquisafilme(LoginRequiredMixin,ListView):
     template_name = "pesquisafilme.html"
     model = Filme
 

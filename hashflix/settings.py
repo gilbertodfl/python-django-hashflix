@@ -127,3 +127,14 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT =BASE_DIR /'media'
+
+##########################################################################################
+# Aqui estamos indicando para onde o usuário deve ser redirecionado 
+# após fazer login, e para onde deve ser redirecionado caso tente acessar 
+# uma página que requer login sem estar autenticado.
+# o filme indica o nome APP e o homefilmes indica o nome da url, 
+# veja o arquivo urls.py do app filme.
+LOGIN_REDIRECT_URL = 'filme:homefilmes'
+# Aqui é a url para onde o usuário deve ser redirecionado caso tente acessar 
+# uma página que requer login sem estar autenticado.
+LOGIN_URL= 'filme:login'
