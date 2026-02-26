@@ -1,9 +1,9 @@
 from ast import List
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from .models import Filme
-from django.views.generic import DetailView, TemplateView, ListView
+from django.views.generic import DetailView, TemplateView, ListView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
-
+from .forms import CriarContaForm
 ## cbv é uma classe que herda de TemplateView, e tem um método get_context_data 
 # que é responsável por passar os dados para o template.
 class Homepage(TemplateView):
@@ -68,9 +68,16 @@ class Editarperfil(LoginRequiredMixin, TemplateView):
     template_name = "editarperfil.html"
     model = Filme
 
-class Criarconta( TemplateView):
+class Criarconta( FormView):
     template_name = "criarconta.html"
-    model = Filme
+    form_class = CriarContaForm
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+        
+    def get_success_url(self):
+        return reverse('filme:login')
 
 
 ##FBS - Function Based Views. 
