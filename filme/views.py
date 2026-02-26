@@ -1,5 +1,5 @@
 from ast import List
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import Filme
 from django.views.generic import DetailView, TemplateView, ListView
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -8,6 +8,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 # que é responsável por passar os dados para o template.
 class Homepage(TemplateView):
     template_name = "homepage.html"
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            ## Se o usuário já autenticou, mande ele para a página de filmes
+            ## que seria o mais trivial para um site de streaming.
+            return( redirect ('filme:homefilmes'))
+        else:
+            ## Se o usuário não autenticou, mande ele para a página de login,
+            return super().get(request, *args, **kwargs)
     
 class Homefilmes(LoginRequiredMixin, ListView):
     template_name = "homefilmes.html"

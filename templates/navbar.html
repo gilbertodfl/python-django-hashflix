@@ -6,19 +6,31 @@
         </a>
     </div>
     <div class='w-6/12 flex justify-end items-center flex'>
+        {% if user.is_authenticated %}
         <div class='mr-2'>
             <form method='GET' action="{% url 'filme:pesquisafilme' %}">
                 <input type='text' name='query' value='{{ request.GET.query }}'placeholder='Search...' class='px-4 py-2 rounded-md bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500'> 
                 <input type='submit' value=''>    
             </form>
         </div>
+        {% endif %}
         <div class='mr-2'>
-            <a href='#'>
-                <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">
-                    Login
-                </button>
-            </a>
+            {% if user.is_authenticated %}
+                <a href='#'>
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">
+                        Logout
+                    </button>
+                </a>
+            {% else %}
+                <a href='#'>
+                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">
+                        Login
+                    </button>
+                </a>
+            {% endif %}
+
         </div>
+        {% if user.is_authenticated %}
         <div class='mr-2'>
             <a href='#'>
                 <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 border border-blue-700 rounded">
@@ -26,5 +38,6 @@
                 </button>
             </a>
         </div>
+        {% endif %}
     </div>
 </nav>
