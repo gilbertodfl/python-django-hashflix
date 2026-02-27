@@ -1,13 +1,15 @@
-from ast import List
+#from ast import For, List
+import email
 from django.shortcuts import render, redirect, reverse
-from .models import Filme
+from .models import Filme, Usuario
 from django.views.generic import DetailView, TemplateView, ListView, FormView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .forms import CriarContaForm
+from .forms import CriarContaForm, FormHomepage
 ## cbv é uma classe que herda de TemplateView, e tem um método get_context_data 
 # que é responsável por passar os dados para o template.
-class Homepage(TemplateView):
+class Homepage(FormView):
     template_name = "homepage.html"
+    form_class = FormHomepage
     def get(self, request, *args, **kwargs):
         if request.user.is_authenticated:
             ## Se o usuário já autenticou, mande ele para a página de filmes
@@ -16,6 +18,14 @@ class Homepage(TemplateView):
         else:
             ## Se o usuário não autenticou, mande ele para a página de login,
             return super().get(request, *args, **kwargs)
+    def get_success_url(self):
+        email = self.request.POST.get('email')
+        usuarios = Usuario.objects.filter(email=email)
+        if usuarios.exists():
+            return reverse('filme:login')
+        else:
+            return reverse('filme:criarconta')
+        
     
 class Homefilmes(LoginRequiredMixin, ListView):
     template_name = "homefilmes.html"
