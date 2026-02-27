@@ -19,13 +19,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-7i@jny5hv42*7v))zl9mnpm+)6s05u%8&o0$rww2)m+yfek_sh"
+
+
+
+import os 
+
+TOKEN_CSRF = os.getenv('TOKEN_CSRF')
+if TOKEN_CSRF:
+    SECRET_KEY = TOKEN_CSRF
+    CSRF_TRUSTED_ORIGINS = ['https://hashflix.onrender.com', 'http://localhost:8000']
+else:
+    SECRET_KEY = "django-insecure-7i@jny5hv42*7v))zl9mnpm+)6s05u%8&o0$rww2)m+yfek_sh"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*",'python-django-hashflix','localhost', '127.0.0.1']
 
 
 # Application definition
@@ -89,7 +98,7 @@ DATABASES = {
     }
 }
 import dj_database_url
-import os 
+
 DATABASES_URL = os.getenv('DATABASE_URL')
 if DATABASES_URL:
     
