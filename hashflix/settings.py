@@ -32,7 +32,10 @@ else:
     SECRET_KEY = "django-insecure-7i@jny5hv42*7v))zl9mnpm+)6s05u%8&o0$rww2)m+yfek_sh"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+## Forma mais inteligente de desligar o DEBUG:  Se definida na produçao, então ativa
+DEBUG = os.getenv("PRODUCTION_DEBUG", "False") == "True"
+if DEBUG:
+    print("⚠ Warning: DEBUG Mode is Active!!")
 
 ALLOWED_HOSTS = ['python-django-hashflix-production.up.railway.app','localhost', '127.0.0.1']
 
