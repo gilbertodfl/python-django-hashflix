@@ -1,15 +1,22 @@
-## Hashflix – Projeto Django de Catálogo de Filmes
+## Hashflix – Catálogo de Filmes em Django (Deploy na Railway)
 
-Este projeto é um **aplicativo Django** chamado `hashflix`, com um app principal `filme`, que funciona como um catálogo de filmes (lista, detalhes, destaques, etc.), usando **Django 6.0.2** e **SQLite** como banco padrão.
+Este projeto é um **aplicativo Django** chamado `hashflix`, com um app principal `filme`, que funciona como um catálogo de filmes (lista, detalhes, destaques, etc.), usando **Django 6.0.2**.
+
+Em desenvolvimento local o banco padrão é **SQLite**, e em produção na **Railway** é usado **PostgreSQL** via `DATABASE_URL`.
 
 ### Tecnologias e versões principais
 
 - **Linguagem**: Python 3.12+
 - **Framework web**: Django 6.0.2
-- **Banco de dados (default)**: SQLite (arquivo `db.sqlite3`)
+- **Banco de dados (desenvolvimento)**: SQLite (`db.sqlite3`)
+- **Banco de dados (produção)**: PostgreSQL (via `dj-database-url` + `DATABASE_URL`)
+- **Servidor WSGI em produção**: Gunicorn
+- **Serviço de arquivos estáticos em produção**: Whitenoise
+- **Formulários**: `django-crispy-forms` + `crispy-bootstrap5`
+- **Outros pacotes**: `pillow`, `psycopg2`, `asgiref`, `sqlparse`, etc. (ver `requirements.txt`)
 - **Gerenciamento de dependências**: `pip` + ambiente virtual (`venv`)
 
-> Caso você ainda não tenha um arquivo de dependências (`requirements.txt`), veja a seção “Gerar requirements.txt” abaixo.
+> As dependências já estão listadas em `requirements.txt`.
 
 ---
 
@@ -30,11 +37,18 @@ Este projeto é um **aplicativo Django** chamado `hashflix`, com um app principa
 - **pip** atualizado
 - Opcional, mas recomendado: **virtualenv** (ou uso do módulo `venv` do Python)
 
-Pacotes Python mínimos:
+Pacotes Python principais (ver `requirements.txt`):
 
 - `Django==6.0.2`
+- `gunicorn`, `dj-database-url`, `whitenoise`
+- `django-crispy-forms`, `crispy-bootstrap5`, `django-bootstrap5`
+- `psycopg2`, `pillow`, `asgiref`, `sqlparse`
 
-Dependendo de recursos adicionais que você vier a adicionar (por exemplo, biblioteca de imagens, autenticação social, etc.), outros pacotes podem ser necessários.
+Você pode instalar tudo de uma vez com:
+
+```bash
+pip install -r requirements.txt
+```
 
 ---
 
@@ -74,14 +88,7 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-Se ainda **não existir** `requirements.txt`, instale pelo menos o Django:
-
-```bash
-pip install --upgrade pip
-pip install "Django==6.0.2"
-```
-
-Depois, gere o `requirements.txt` (boa prática):
+Se você adicionar novas dependências, gere novamente o `requirements.txt`:
 
 ```bash
 pip freeze > requirements.txt
@@ -93,26 +100,31 @@ pip freeze > requirements.txt
 
 ### Variáveis de ambiente e segurança
 
-O arquivo `hashflix/settings.py` atualmente está com:
+O arquivo `hashflix/settings.py` está configurado para ler variáveis de ambiente em produção:
 
-- `DEBUG = True`
-- `ALLOWED_HOSTS = []`
-- `SECRET_KEY` exposto diretamente no código.
+- `SECRET_KEY`: lida da variável `TOKEN_CSRF` (com uma chave de desenvolvimento como fallback).
+- `DEBUG`: controlado por `PRODUCTION_DEBUG` (string `"True"` para ligar; qualquer outra coisa desliga).
+- `ALLOWED_HOSTS`: já inclui o domínio da aplicação na Railway e `localhost/127.0.0.1`.
+- `CSRF_TRUSTED_ORIGINS`: inclui a URL da aplicação na Railway.
+- `DATABASE_URL`: quando definido, substitui o SQLite e passa a usar PostgreSQL via `dj-database-url`.
 
 **Boas práticas para produção:**
 
-- Nunca faça commit da `SECRET_KEY` real; use variáveis de ambiente (por exemplo, com `python-dotenv` ou `django-environ`).
-- Defina `DEBUG = False` em produção.
-- Preencha `ALLOWED_HOSTS` com os domínios/IPs em que o projeto será servido.
+- Não exponha a `SECRET_KEY` real no código; use sempre a variável `TOKEN_CSRF`.
+- Mantenha `PRODUCTION_DEBUG` **sem ser "True"** em produção (ou simplesmente não defina a variável).
+- Garanta que seu domínio esteja em `ALLOWED_HOSTS` e `CSRF_TRUSTED_ORIGINS`.
 
 ### Banco de dados
 
-Por padrão:
+Por padrão (desenvolvimento local):
 
 - Engine: `django.db.backends.sqlite3`
 - Arquivo: `db.sqlite3` na raiz do projeto.
 
-Para ambiente de produção, é recomendável usar um banco mais robusto (PostgreSQL, MySQL, etc.) e configurar as credenciais por variáveis de ambiente.
+Em produção (Railway), quando `DATABASE_URL` está definido:
+
+- O projeto passa a usar **PostgreSQL** (ou outro banco apontado por essa URL).
+- A configuração é feita automaticamente por `dj-database-url.config`.
 
 ### Templates e context processors
 
@@ -120,11 +132,18 @@ Em `hashflix/settings.py`, o projeto define:
 
 - Diretório global de templates: `DIRS = ['templates']`
 - App `filme` possui templates próprios (ex.: `homefilmes.html`, `detalhesfilme.html`).
-- Dois **context processors** personalizados:
+- **Context processors** personalizados:
   - `filme.novos_context.lista_filmes_recentes`
   - `filme.novos_context.lista_filmes_emalta`
+  - `filme.novos_context.filme_destaque`
 
-Essas funções recebem `request` como primeiro parâmetro e retornam dicionários com listas de filmes, disponibilizando dados em todos os templates.
+Essas funções recebem `request` como primeiro parâmetro e retornam dicionários com listas/destaques de filmes, disponibilizando dados em todos os templates.
+
+O template base `templates/base.html`:
+
+- Carrega estáticos com `{% load static %}`.
+- Define o favicon com `<link rel="icon" href="{% static 'favicon.ico' %}">`.
+- Espera encontrar o arquivo `static/favicon.ico` (que será servido pelo Django/Whitenoise).
 
 ---
 
@@ -157,6 +176,38 @@ python manage.py runserver
 
 ---
 
+## Usuário personalizado e criação automática de admin
+
+O projeto usa um **modelo de usuário personalizado**:
+
+- `AUTH_USER_MODEL = 'filme.Usuario'`
+- Classe `Usuario` herda de `AbstractUser` e adiciona o relacionamento `filmes_vistos` com `Filme`.
+
+Para facilitar a criação do usuário administrador em produção (e também em desenvolvimento), existe um **comando de gestão**:
+
+```bash
+python manage.py cria_admin_automatico
+```
+
+Este comando:
+
+- Lê as variáveis de ambiente `EMAIL_ADMIN` e `SENHA_ADMIN`.
+- Se já existir um usuário com esse e-mail, não faz nada.
+- Caso contrário, cria um superusuário com:
+  - `username="admin"`
+  - `email=EMAIL_ADMIN`
+  - `password=SENHA_ADMIN`
+
+Exemplo de uso local (Linux/macOS):
+
+```bash
+EMAIL_ADMIN=seu_email@example.com SENHA_ADMIN=suasenha python manage.py cria_admin_automatico
+```
+
+> Em produção (Railway), esse comando é executado automaticamente via `Procfile`, conforme descrito abaixo.
+
+---
+
 ## Boas práticas recomendadas (nível sênior)
 
 - **Separar configurações por ambiente**: por exemplo, `settings_dev.py`, `settings_prod.py`, ou uso de variáveis de ambiente para DEBUG, banco, credenciais, etc.
@@ -181,6 +232,45 @@ pip freeze > requirements.txt
 ```
 
 Inclua este arquivo no versionamento (`git add requirements.txt`) para que qualquer pessoa possa reproduzir o ambiente.
+
+---
+
+## Deploy na Railway
+
+Este projeto está preparado para ser deployado na **Railway** usando:
+
+- `Procfile`
+- `runtime.txt` (definindo a versão do Python)
+- Variáveis de ambiente para banco, chave secreta e usuário admin.
+
+### Procfile
+
+O `Procfile` está configurado assim:
+
+```text
+web: python manage.py migrate && python manage.py cria_admin_automatico && gunicorn hashflix.wsgi --log-file -
+```
+
+Ordem das etapas:
+
+1. `python manage.py migrate` – aplica migrações no banco (incluindo o modelo de usuário personalizado `Usuario`).
+2. `python manage.py cria_admin_automatico` – garante que exista um superusuário com o e-mail definido nas variáveis de ambiente.
+3. `gunicorn hashflix.wsgi` – sobe o servidor WSGI em produção.
+
+### Variáveis de ambiente importantes na Railway
+
+Configure pelo menos:
+
+- `DATABASE_URL` – URL do banco (PostgreSQL da Railway).
+- `TOKEN_CSRF` – valor usado como `SECRET_KEY` em produção.
+- `PRODUCTION_DEBUG` – normalmente **não definir** ou deixar diferente de `"True"` para manter `DEBUG=False`.
+- `EMAIL_ADMIN` – e-mail do usuário admin criado automaticamente.
+- `SENHA_ADMIN` – senha do usuário admin criado automaticamente.
+
+Além disso, o domínio gerado pela Railway deve estar:
+
+- Em `ALLOWED_HOSTS`.
+- Em `CSRF_TRUSTED_ORIGINS`.
 
 ---
 
