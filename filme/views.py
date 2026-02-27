@@ -2,7 +2,8 @@
 import email
 from django.shortcuts import render, redirect, reverse
 from .models import Filme, Usuario
-from django.views.generic import DetailView, TemplateView, ListView, FormView
+
+from django.views.generic import DetailView, TemplateView, ListView, FormView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import CriarContaForm, FormHomepage
 ## cbv é uma classe que herda de TemplateView, e tem um método get_context_data 
@@ -74,9 +75,14 @@ class Pesquisafilme(LoginRequiredMixin,ListView):
             ## return Filme.objects.filter(titulo__icontains=query)
         else:
             return Filme.objects.none()
-class Editarperfil(LoginRequiredMixin, TemplateView):
+class Editarperfil(LoginRequiredMixin, UpdateView):
     template_name = "editarperfil.html"
-    model = Filme
+    model = Usuario
+    fields= ['first_name', 'last_name', 'email']
+    def get_success_url(self):
+        return reverse('filme:homefilmes')
+
+    
 
 class Criarconta( FormView):
     template_name = "criarconta.html"
