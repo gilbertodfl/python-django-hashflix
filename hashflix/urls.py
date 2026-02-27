@@ -16,16 +16,24 @@ Including another URLconf
 """
 
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.static import serve
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('filme.urls', namespace='filme')),
 ]
 
-## As variáveis STATIC_URL e MEDIA_URL são usadas para definir as URLs base para acessar arquivos estáticos e arquivos de mídia, respectivamente. Já as variáveis STATIC_ROOT e MEDIA_ROOT são usadas para definir os diretórios onde os arquivos estáticos e de mídia serão armazenados no servidor.
-## Veja o arquivo settings.py para mais detalhes sobre essas variáveis.
-urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# Arquivos estáticos (collectstatic) e mídia (uploads).
+# Em desenvolvimento (DEBUG=True), static() já adiciona as rotas.
+# Em produção (DEBUG=False), static() não adiciona rotas; o Whitenoise cuida dos estáticos,
+# mas os arquivos de mídia (thumbs, etc.) precisam ser servidos por nós:
+if not settings.DEBUG:
+    urlpatterns += [
+        re_path(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
+    ]
+else:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
