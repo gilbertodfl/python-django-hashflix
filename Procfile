@@ -1,1 +1,1 @@
-web: python manage.py collectstatic --noinput && python manage.py migrate && python manage.py cria_admin_automatico && gunicorn hashflix.wsgi --log-file -
+web: mkdir -p staticfiles media && python manage.py collectstatic --noinput && python manage.py migrate && python manage.py cria_admin_automatico && gunicorn hashflix.wsgi --log-file -

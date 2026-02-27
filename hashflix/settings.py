@@ -146,15 +146,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-STATIC_URL = "static/"
-## aqui é a pasta onde os arquivos estáticos serão coletados quando rodarmos o comando collectstatic, 
-# veja o arquivo wsgi.py para mais detalhes.
-STATIC_ROOT =BASE_DIR /'staticfiles' 
-
+# URLs com barra inicial para que imagens/estáticos carreguem corretamente em qualquer página (ex: /filmes/123/).
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
-MEDIA_URL = 'media/'
-MEDIA_ROOT =BASE_DIR /'media'
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 ##########################################################################################
 # Aqui estamos indicando para onde o usuário deve ser redirecionado 
