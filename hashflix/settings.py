@@ -32,8 +32,14 @@ else:
     SECRET_KEY = "django-insecure-7i@jny5hv42*7v))zl9mnpm+)6s05u%8&o0$rww2)m+yfek_sh"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-## Forma mais inteligente de desligar o DEBUG:  Se definida na produçao, então ativa
-DEBUG = os.getenv("PRODUCTION_DEBUG", "False") == "True"
+# Local: DEBUG=True por padrão (quando não há DATABASE_URL).
+# Produção (Railway): com DATABASE_URL definido, DEBUG fica False, a menos que PRODUCTION_DEBUG="True".
+_production_debug = os.getenv("PRODUCTION_DEBUG")
+if _production_debug is not None:
+    DEBUG = _production_debug == "True"
+else:
+    DEBUG = not bool(os.getenv("DATABASE_URL"))
+
 if DEBUG:
     print("⚠ Warning: DEBUG Mode is Active!!")
 
@@ -78,11 +84,13 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 ## aqui indicamos o app filme, conforme a pasta, veja o arquivo novos_context.py e dentro pego a função
+                ## A vantagem deste técnica é que podemos ter variáveis globais para todas as páginas, como por exemplo a lista de filmes recentes, 
+                # ou os filmes em alta, ou o filme destaque, e assim não precisamos ficar buscando essas informações em cada view, 
+                # e nem passar essas informações para cada template.
+                # Por exemplo, no homesfilmes.html estou chamando assim: {% for filme in lista_filmes_recentes %}
                 'filme.novos_context.lista_filmes_recentes',
                 'filme.novos_context.lista_filmes_emalta',
                 'filme.novos_context.filme_destaque',
-
-               
             ],
         },
     },

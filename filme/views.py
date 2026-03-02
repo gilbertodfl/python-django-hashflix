@@ -18,6 +18,8 @@ class Homepage(FormView):
             return( redirect ('filme:homefilmes'))
         else:
             ## Se o usuário não autenticou, mande ele para a página de login,
+            ## Isto acontece porque no arquivo settings.py definimos assim:
+            ## LOGIN_URL= 'filme:login'
             return super().get(request, *args, **kwargs)
     def get_success_url(self):
         email = self.request.POST.get('email')

@@ -15,7 +15,7 @@ app_name='filme'
 
 # path('', Homepage.as_view(), name='homepage')
 #       ^        ^                   ^
-#    caminho   view              nome da URL
+#    caminho   view              apelido
 urlpatterns = [
     path('', Homepage.as_view(), name='homepage'),
     path('filmes/', Homefilmes.as_view(), name='homefilmes'),
